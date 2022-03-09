@@ -741,6 +741,9 @@ export const pairing = (x: G1, y: G2) => {
   }
   throw new Error('pow:bad type')
 }
-export function init(): any {
-  return Mcl.initialize();
+export async function init(curve = CurveType.BLS12_381): Promise<any> {
+  return new Promise((res: any) => {
+    Mcl.initialize(curve);
+    res();
+  })
 }
