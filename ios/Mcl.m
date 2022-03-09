@@ -11,9 +11,9 @@ RCT_EXPORT_MODULE()
     return NO;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(initialize)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(initialize:(nonnull NSNumber*)curve)
 {
-    mclBn_init(5, MCLBN_COMPILED_TIME_VAR);
+    mclBn_init(curve.intValue, MCLBN_COMPILED_TIME_VAR);
     return [NSNull null];
 }
 
