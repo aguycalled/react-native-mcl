@@ -20,11 +20,13 @@ const Mcl = NativeModules.Mcl
       }
     );
 
-const MCLBN_FP_SIZE = 48;
-const MCLBN_FR_SIZE = 32;
-const MCLBN_G1_SIZE = 48;
-const MCLBN_G2_SIZE = 96;
-const MCLBN_GT_SIZE = 194;
+const MCLBN_FP_UNIT_SIZE = 6
+const MCLBN_FR_UNIT_SIZE = 4
+const MCLBN_FP_SIZE = MCLBN_FP_UNIT_SIZE * 8
+const MCLBN_FR_SIZE = MCLBN_FR_UNIT_SIZE * 8
+const MCLBN_G1_SIZE = MCLBN_FP_SIZE * 3
+const MCLBN_G2_SIZE = MCLBN_FP_SIZE * 6
+const MCLBN_GT_SIZE = MCLBN_FP_SIZE * 12
 
 export enum CurveType {
   BN254 = 0,
@@ -53,11 +55,10 @@ export class Common {
   a_: Uint8Array;
 
   constructor(size: number) {
-    this.a_ = new Uint8Array(size );
+    this.a_ = new Uint8Array(size);
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deserialize(b: Uint8Array) {
-    this.a_ = b;
+    this.a_ = new Uint8Array(Buffer.from(b).buffer);
   }
   serialize() {}
   deserializeHexStr(s: string) {
@@ -92,7 +93,7 @@ export class Fr extends Common {
     this.a_ = new Uint8Array(Mcl.frSetInt32(x));
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.frDeserialize(s));
+    this.a_ = new Uint8Array(Mcl.frDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;
@@ -113,13 +114,13 @@ export class Fr extends Common {
     return Mcl.frIsEqual(this.a_, rhs.a_) === 1;
   }
   setLittleEndian(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.frSetLittleEndian(s));
+    this.a_ = new Uint8Array(Mcl.frSetLittleEndian(new Uint8Array(Buffer.from(s).buffer)));
   }
   setLittleEndianMod(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.frSetLittleEndianMod(s));
+    this.a_ = new Uint8Array(Mcl.frSetLittleEndianMod(new Uint8Array(Buffer.from(s).buffer)));
   }
   setBigEndianMod(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.frSetBigEndianMod(s));
+    this.a_ = new Uint8Array(Mcl.frSetBigEndianMod(new Uint8Array(Buffer.from(s).buffer)));
   }
   setByCSPRNG() {
     const a = new Uint8Array(MCLBN_FR_SIZE);
@@ -128,9 +129,9 @@ export class Fr extends Common {
   }
   setHashOf(a: string | Uint8Array) {
     if (typeof a === 'string') {
-      this.setHashOf(new Uint8Array(Buffer.from(a, 'utf-8')));
+      this.setHashOf(new Uint8Array(Buffer.from(a, 'utf-8').buffer));
     } else {
-      this.a_ = new Uint8Array(Mcl.frSetHashOf(a));
+      this.a_ = new Uint8Array(Mcl.frSetHashOf(new Uint8Array(Buffer.from(a).buffer)));
     }
   }
 }
@@ -149,7 +150,7 @@ export class Fp extends Common {
     this.a_ = new Uint8Array(Mcl.fpSetInt32(x));
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.fpDeserialize(s));
+    this.a_ = new Uint8Array(Mcl.fpDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;
@@ -164,13 +165,13 @@ export class Fp extends Common {
     return Mcl.fpIsEqual(this.a_, rhs.a_) === 1;
   }
   setLittleEndian(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.fpSetLittleEndian(s));
+    this.a_ = new Uint8Array(Mcl.fpSetLittleEndian(new Uint8Array(Buffer.from(s).buffer)));
   }
   setLittleEndianMod(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.fpSetLittleEndianMod(s));
+    this.a_ = new Uint8Array(Mcl.fpSetLittleEndianMod(new Uint8Array(Buffer.from(s).buffer)));
   }
   setBigEndianMod(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.fpSetBigEndianMod(s));
+    this.a_ = new Uint8Array(Mcl.fpSetBigEndianMod(new Uint8Array(Buffer.from(s).buffer)));
   }
   setByCSPRNG() {
     const a = new Uint8Array(MCLBN_FP_SIZE);
@@ -181,7 +182,7 @@ export class Fp extends Common {
     if (typeof a === 'string') {
       this.setHashOf(new Uint8Array(Buffer.from(a, 'utf-8')));
     } else {
-      this.a_ = new Uint8Array(Mcl.fpSetHashOf(a));
+      this.a_ = new Uint8Array(Mcl.fpSetHashOf(new Uint8Array(Buffer.from(a).buffer)));
     }
   }
   mapToG1() {
@@ -209,7 +210,7 @@ export class Fp2 extends Common {
     this.set_b(v);
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.fp2Deserialize(s));
+    this.a_ = new Uint8Array(Mcl.fp2Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;
@@ -253,7 +254,7 @@ export class G1 extends Common {
     super(MCLBN_G1_SIZE);
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.g1Deserialize(s));
+    this.a_ = new Uint8Array(Mcl.g1Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;
@@ -304,7 +305,7 @@ export class G1 extends Common {
     return Mcl.g1IsEqual(this.a_, rhs.a_) === 1;
   }
   setHashOf(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.g1SetHashAndMapTo(s));
+    this.a_ = new Uint8Array(Mcl.g1SetHashAndMapTo(new Uint8Array(Buffer.from(s).buffer)));
   }
 }
 export const deserializeHexStrToG1 = (s: string) => {
@@ -341,7 +342,7 @@ export class G2 extends Common {
     super(MCLBN_G2_SIZE);
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.g2Deserialize(s));
+    this.a_ = new Uint8Array(Mcl.g2Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;
@@ -392,7 +393,7 @@ export class G2 extends Common {
     return Mcl.g2IsEqual(this.a_, rhs.a_) === 1;
   }
   setHashOf(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.g2SetHashAndMapTo(s));
+    this.a_ = new Uint8Array(Mcl.g2SetHashAndMapTo(new Uint8Array(Buffer.from(s).buffer)));
   }
 }
 
@@ -410,7 +411,7 @@ export class GT extends Common {
     this.a_ = new Uint8Array(Mcl.gtSetInt32(x));
   }
   deserialize(s: Uint8Array) {
-    this.a_ = new Uint8Array(Mcl.gtDeserialize(s));
+    this.a_ = new Uint8Array(Mcl.gtDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
     return this.a_;

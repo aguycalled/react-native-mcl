@@ -1,6 +1,6 @@
 {
   "name": "react-native-mcl",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "React Native MCL",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

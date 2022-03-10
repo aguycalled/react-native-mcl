@@ -8,14 +8,6 @@
 #ifndef Macros_h
 #define Macros_h
 
-#define MCLBN_FP_UNIT_SIZE 6
-#define MCLBN_FR_UNIT_SIZE 4
-#define MCLBN_FP_SIZE 48
-#define MCLBN_FR_SIZE 32
-#define MCLBN_G1_SIZE 48
-#define MCLBN_G2_SIZE 98
-#define MCLBN_GT_SIZE 196
-
 #define ARRAY_TO_G1(ba, g1) \
 Byte* g1##Bytes = calloc([[ba allValues] count], sizeof(Byte)); \
 [ba enumerateKeysAndObjectsUsingBlock:^(id index, id number, BOOL* stop){ \
@@ -83,55 +75,55 @@ ca[[index integerValue]] = [number integerValue]; \
 }];
 
 #define G1_TO_ARRAY(g1, ba) \
-char ba##C[MCLBN_G1_SIZE]; \
-mclBnG1_serialize(&ba##C[0], MCLBN_G1_SIZE, &g1); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_G1_SIZE]; \
-for (unsigned int i = 0; i < MCLBN_G1_SIZE; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnG1_serialize(&ba##C[0], 3096, &g1); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
 
 #define G2_TO_ARRAY(g2, ba) \
-char ba##C[MCLBN_G2_SIZE]; \
-mclBnG2_serialize(&ba##C[0], MCLBN_G2_SIZE, &g2); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_G2_SIZE]; \
-for (unsigned int i = 0; i < MCLBN_G2_SIZE; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnG2_serialize(&ba##C[0], 3096, &g2); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
 
 #define GT_TO_ARRAY(gt, ba) \
-char ba##C[MCLBN_GT_SIZE]; \
-mclBnGT_serialize(&ba##C[0], MCLBN_GT_SIZE, &gt); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_GT_SIZE]; \
-for (unsigned int i = 0; i < MCLBN_GT_SIZE; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnGT_serialize(&ba##C[0], 3096, &gt); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
 
 #define FR_TO_ARRAY(fr, ba) \
-char ba##C[MCLBN_FR_SIZE]; \
-mclBnFr_serialize(&ba##C[0], MCLBN_FR_SIZE, &fr); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_FR_SIZE]; \
-for (unsigned int i = 0; i < MCLBN_FR_SIZE; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnFr_serialize(&ba##C[0], 3096, &fr); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
 
 #define FP_TO_ARRAY(fp, ba) \
-char ba##C[MCLBN_FP_SIZE]; \
-mclBnFp_serialize(&ba##C[0], MCLBN_FP_SIZE, &fp); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_FP_SIZE]; \
-for (unsigned int i = 0; i < MCLBN_FP_SIZE; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnFp_serialize(&ba##C[0], 3096, &fp); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
 
 #define FP2_TO_ARRAY(fp2, ba) \
-char ba##C[MCLBN_FP_SIZE*2]; \
-mclBnFp2_serialize(&ba##C[0], MCLBN_FP_SIZE*2, &fp2); \
-NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: MCLBN_FP_SIZE*2]; \
-for (unsigned int i = 0; i < MCLBN_FP_SIZE*2; i++) \
+char ba##C[3096]; \
+int ba##len = mclBnFp2_serialize(&ba##C[0], 3096, &fp2); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
 { \
 [ba addObject: [[NSNumber alloc] initWithUnsignedChar:ba##C[i]]]; \
 }
