@@ -1,4 +1,3 @@
-import './shim.js';
 import crypto from 'crypto';
 import { NativeModules, Platform } from 'react-native';
 import * as utils from './Utils';
@@ -96,7 +95,7 @@ export class Fr extends Common {
     this.a_ = new Uint8Array(Mcl.frDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.frDeserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   setStr(s: string, base = 0) {
     this.a_ = new Uint8Array(Mcl.frSetStr(s, base));
@@ -153,7 +152,7 @@ export class Fp extends Common {
     this.a_ = new Uint8Array(Mcl.fpDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.fpDeserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   setStr(s: string, base = 0) {
     this.a_ = new Uint8Array(Mcl.fpSetStr(s, base));
@@ -213,7 +212,7 @@ export class Fp2 extends Common {
     this.a_ = new Uint8Array(Mcl.fp2Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.fp2Deserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   isEqual(rhs: this) {
     return Mcl.fp2IsEqual(this.a_, rhs.a_) === 1;
@@ -257,7 +256,7 @@ export class G1 extends Common {
     this.a_ = new Uint8Array(Mcl.g1Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.g1Deserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   setStr(s: string, base = 0) {
     this.a_ = new Uint8Array(Mcl.g1SetStr(s, base));
@@ -345,7 +344,7 @@ export class G2 extends Common {
     this.a_ = new Uint8Array(Mcl.g2Deserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.g2Deserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   setStr(s: string, base = 0) {
     this.a_ = new Uint8Array(Mcl.g2SetStr(s, base));
@@ -414,7 +413,7 @@ export class GT extends Common {
     this.a_ = new Uint8Array(Mcl.gtDeserialize(new Uint8Array(Buffer.from(s).buffer)));
   }
   serialize() {
-    return this.a_;
+    return new Uint8Array(Mcl.gtDeserialize(new Uint8Array(Buffer.from(this.a_).buffer)));
   }
   setStr(s: string, base = 0) {
     this.a_ = new Uint8Array(Mcl.gtSetStr(s, base));
