@@ -9,9 +9,7 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "@aguycalled/bitcore-lib": "^0.15.59",
     "@tradle/react-native-http": "^2.0.1",
-    "bitcore-mnemonic": "^8.25.25",
     "browserify-zlib": "^0.1.4",
     "buffer": "^4.9.2",
     "dns.js": "^1.0.1",

@@ -537,7 +537,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2IsEqual:(nonnull NSDictionary*)a withB
     return [NSNumber numberWithInt:ret];
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2MapToG1:(nonnull NSDictionary*)a)
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2MapToG2:(nonnull NSDictionary*)a)
 {
     ARRAY_TO_FP2(a, fp2)
     mclBnG2 g2;
@@ -916,7 +916,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g2Dbl:(nonnull NSDictionary*)a )
 {
     ARRAY_TO_G2(a, g2)
 
-    mclBnG1 g22;
+    mclBnG2 g22;
     mclBnG2_dbl(&g22, &g2);
     
     G2_TO_ARRAY(g22, ret)
@@ -928,7 +928,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g2Normalize:(nonnull NSDictionary*)a )
 {
     ARRAY_TO_G2(a, g2)
 
-    mclBnG1 g22;
+    mclBnG2 g22;
     mclBnG2_normalize(&g22, &g2);
     
     G2_TO_ARRAY(g22, ret)
@@ -1032,6 +1032,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtSetInt32:(nonnull NSNumber*)b)
     GT_TO_ARRAY(gt, ret)
     
     return ret;
+}
+
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtIsEqual:(nonnull NSDictionary*)a withB:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_GT(a, gt)
+    ARRAY_TO_GT(b, gt2)
+    
+    int ret = mclBnGT_isEqual(&gt, &gt2);
+    return [NSNumber numberWithInt:ret];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtSetStr:(nonnull NSString*)a ioMode:(nonnull NSNumber*)io)
@@ -1140,7 +1150,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtMul:(nonnull NSDictionary*)a withB:(non
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtPow:(nonnull NSDictionary*)a withB:(nonnull NSDictionary*)b)
 {
     ARRAY_TO_GT(a, op1)
-    ARRAY_TO_GT(b, op2)
+    ARRAY_TO_FR(b, op2)
 
     mclBnGT result;
     mclBnGT_pow(&result, &op1, &op2);
@@ -1227,7 +1237,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setETHserialization:(nonnull NSNumber*)a 
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(verifyOrderG1:(nonnull NSNumber*)a )
 {
-    mclBn_verifyOrderG2(a.intValue);
+    mclBn_verifyOrderG1(a.intValue);
             
     return [NSNull null];
 }

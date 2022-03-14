@@ -185,7 +185,7 @@ PODS:
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
   - React-jsinspector (0.63.4)
-  - react-native-mcl (0.1.0):
+  - react-native-mcl (0.1.7):
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
@@ -377,7 +377,7 @@ SPEC CHECKSUMS:
   React-jsi: a0418934cf48f25b485631deb27c64dc40fb4c31
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
-  react-native-mcl: 37a348c3c58873980c133efcec4c6c7a43d4c4a6
+  react-native-mcl: 5c63af26af23ceaeed86b3cc285b709c209f9d55
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-udp: ff9d13e523f2b58e6bc5d4d32321ac60671b5dc9
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
