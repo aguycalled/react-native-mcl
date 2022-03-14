@@ -35,8 +35,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(frSetLittleEndian:(nonnull NSDictionary*)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(frDeserialize:(nonnull NSDictionary*)b)
 {
-    ARRAY_TO_FR(b, fr)
+    DESER_ARRAY_TO_FR(b, fr)
     FR_TO_ARRAY(fr, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(frSerialize:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_FR(b, fr)
+    FRSER_TO_ARRAY(fr, ret)
     
     return ret;
 }
@@ -268,8 +276,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fpSetLittleEndian:(nonnull NSDictionary*)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fpDeserialize:(nonnull NSDictionary*)b)
 {
-    ARRAY_TO_FP(b, fp)
+    DESER_ARRAY_TO_FP(b, fp)
     FP_TO_ARRAY(fp, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fpSerialize:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_FP(b, fp)
+    FPSER_TO_ARRAY(fp, ret)
     
     return ret;
 }
@@ -498,8 +514,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fpDiv:(nonnull NSDictionary*)a withB:(non
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2Deserialize:(nonnull NSDictionary*)b)
 {
-    ARRAY_TO_FP2(b, fp2)
+    DESER_ARRAY_TO_FP2(b, fp2)
     FP2_TO_ARRAY(fp2, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2Serialize:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_FP2(b, fp2)
+    FP2SER_TO_ARRAY(fp2, ret)
     
     return ret;
 }
@@ -628,11 +652,20 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(fp2Div:(nonnull NSDictionary*)a withB:(no
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g1Deserialize:(nonnull NSDictionary*)b)
 {
-    ARRAY_TO_G1(b, g1)
+    DESER_ARRAY_TO_G1(b, g1)
     G1_TO_ARRAY(g1, ret)
     
     return ret;
 }
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g1Serialize:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_G1(b, g1)
+    G1SER_TO_ARRAY(g1, ret)
+    
+    return ret;
+}
+
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g1SetHashAndMapTo:(nonnull NSDictionary*)b)
 {
@@ -804,8 +837,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g1MulVec:(nonnull NSArray*)a withB:(nonnu
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g2Deserialize:(nonnull NSDictionary*)b)
 {
+    DESER_ARRAY_TO_G2(b, g2)
+    G2_TO_ARRAY(g2, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g2Serialize:(nonnull NSDictionary*)b)
+{
     ARRAY_TO_G2(b, g2)
-    G1_TO_ARRAY(g2, ret)
+    G2SER_TO_ARRAY(g2, ret)
     
     return ret;
 }
@@ -968,8 +1009,16 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(g2MulVec:(nonnull NSArray*)a withB:(nonnu
 // GT Methods
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtDeserialize:(nonnull NSDictionary*)b)
 {
-    ARRAY_TO_GT(b, gt)
+    DESER_ARRAY_TO_GT(b, gt)
     GT_TO_ARRAY(gt, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(gtSerialize:(nonnull NSDictionary*)b)
+{
+    ARRAY_TO_GT(b, gt)
+    GTSER_TO_ARRAY(gt, ret)
     
     return ret;
 }
