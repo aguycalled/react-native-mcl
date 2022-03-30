@@ -59,6 +59,16 @@ public class MclModule extends ReactContextBaseJavaModule {
         return intArray;
     }
 
+    static public int[][] readableArrayToIntArray(ReadableArray a) {
+        int[][] intArray = new int[a.size()][];
+
+        for (int i = 0; i < a.size(); i++) {
+            intArray[i] = readableMapToIntArray(a.getMap(i));
+        }
+
+        return intArray;
+    }
+
     // FR
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -1091,10 +1101,10 @@ public class MclModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public WritableArray g1MulVec(ReadableMap a, ReadableMap b) {
+    public WritableArray g1MulVec(ReadableArray a, ReadableArray b) {
         try {
-            int[][] byteArray = readableMapArrayToIntArray(a);
-            int[][] byteArray2 = readableMapArrayToIntArray(b);
+            int[][] byteArray = readableArrayToIntArray(a);
+            int[][] byteArray2 = readableArrayToIntArray(b);
 
             int[] result = _g1MulVec(byteArray, byteArray2);
 
@@ -1610,6 +1620,81 @@ public class MclModule extends ReactContextBaseJavaModule {
         return null;
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public void setDSTLabel(java.lang.String a) {
+        _setDSTLabel(a);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableArray getPublicKey(ReadableMap a) {
+        try {
+            int[] byteArray = readableMapToIntArray(a);
+
+            int[] result = _getPublicKey(byteArray);
+
+            if (result != null) {
+                WritableArray array = Arguments.makeNativeArray(result);
+                return array;
+            }
+        } catch (Exception e) {
+            Log.d("ReactNative", e.toString());
+        }
+        return null;
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableArray sign(ReadableMap a, ReadableMap b) {
+        try {
+            int[] byteArray = readableMapToIntArray(a);
+            int[] byteArray2 = readableMapToIntArray(b);
+
+            int[] result = _sign(byteArray, byteArray2);
+
+            if (result != null) {
+                WritableArray array = Arguments.makeNativeArray(result);
+                return array;
+            }
+        } catch (Exception e) {
+            Log.d("ReactNative", e.toString());
+        }
+        return null;
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean verify(ReadableMap a, ReadableMap b, ReadableMap c) {
+        int[] byteArray = readableMapToIntArray(a);
+        int[] byteArray2 = readableMapToIntArray(b);
+        int[] byteArray3 = readableMapToIntArray(c);
+
+        return _verify(byteArray, byteArray2, byteArray3);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableArray aggregateSignatures(ReadableArray a) {
+        try {
+            int[][] byteArray = readableArrayToIntArray(a);
+
+            int[] result = _aggregateSignatures(byteArray);
+
+            if (result != null) {
+                WritableArray array = Arguments.makeNativeArray(result);
+                return array;
+            }
+        } catch (Exception e) {
+            Log.d("ReactNative", e.toString());
+        }
+        return null;
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean verifyBatch(ReadableMap a, ReadableArray b, ReadableArray c) {
+        int[] byteArray = readableMapToIntArray(a);
+        int[][] byteArray2 = readableArrayToIntArray(b);
+        int[][] byteArray3 = readableArrayToIntArray(c);
+
+        return _verifyBatch(byteArray, byteArray2, byteArray3);
+    }
+
     @ReactMethod
     public void initialize(int a, Promise promise) {
         if (_initialize(a)) {
@@ -1735,4 +1820,12 @@ public class MclModule extends ReactContextBaseJavaModule {
     public static native void _setETHserialization(int a);
     public static native void _verifyOrderG1(int a);
     public static native void _verifyOrderG2(int a);
+
+    public static native void _setDSTLabel(java.lang.String a);
+
+    public static native int[] _getPublicKey(int[] a);
+    public static native int[] _sign(int[] a, int[] b);
+    public static native boolean _verify(int[] a, int[] b, int[] c);
+    public static native int[] _aggregateSignatures(int[][] a);
+    public static native boolean _verifyBatch(int[] a, int[][] b, int[][] c);
 }

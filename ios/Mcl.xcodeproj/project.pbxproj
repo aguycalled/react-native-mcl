@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A07302300C454AABBFC67777 /* libRNRandomBytes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E06CC982139B4492B27FB72E /* libRNRandomBytes.a */; };
-		FAF92A7A27D64C6700851293 /* bls_framework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF92A7927D64C6700851293 /* bls_framework.xcframework */; };
+		FA13AB4027EDA581007A4548 /* bls_framework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF92A7927D64C6700851293 /* bls_framework.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,7 @@
 		B3E7B5881CC2AC0600A0062D /* Mcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mcl.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* Mcl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mcl.m; sourceTree = "<group>"; };
 		E06CC982139B4492B27FB72E /* libRNRandomBytes.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNRandomBytes.a; sourceTree = "<group>"; };
-		FAF92A7927D64C6700851293 /* bls_framework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = bls_framework.xcframework; path = "../../bls-eth-swift/bls_framework.xcframework"; sourceTree = "<group>"; };
+		FAF92A7927D64C6700851293 /* bls_framework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = bls_framework.xcframework; sourceTree = SOURCE_ROOT; };
 		FAF92A9327D699EA00851293 /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,8 +55,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAF92A7A27D64C6700851293 /* bls_framework.xcframework in Frameworks */,
 				A07302300C454AABBFC67777 /* libRNRandomBytes.a in Frameworks */,
+				FA13AB4027EDA581007A4548 /* bls_framework.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

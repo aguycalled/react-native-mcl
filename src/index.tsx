@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { NativeModules, Platform } from 'react-native';
-import * as utils from './Utils';
+import * as Utils from './Utils';
 
 const LINKING_ERROR =
   `The package 'react-native-mcl' doesn't seem to be linked. Make sure: \n\n` +
@@ -63,10 +63,10 @@ export class Common {
   }
   serialize() {}
   deserializeHexStr(s: string) {
-    this.deserialize(utils.fromHexStr(s));
+    this.deserialize(Utils.fromHexStr(s));
   }
   serializeToHexStr() {
-    return utils.toHexStr(this.serialize());
+    return Utils.toHexStr(this.serialize());
   }
   dump(msg = '') {
     console.log(msg + this.serializeToHexStr());
@@ -88,7 +88,7 @@ export class Common {
     if (a instanceof Uint32Array) {
       this.a_.set(a);
     } else {
-      this.a_.set(utils.Uint8ToUint32(a));
+      this.a_.set(Utils.Uint8ToUint32(a));
     }
   }
 }
@@ -102,14 +102,14 @@ export class Fr extends Common {
   }
   deserialize(s: Uint8Array) {
     try {
-      this._setA(Mcl.frDeserialize(s));
+      this._setA(Mcl.frDeserialize(new Uint8Array(s)));
     } catch(e) {
       console.log(e)
     }
   }
   serialize() {
     try {
-      return new Uint8Array(Mcl.frSerialize(utils.Uint32ToUint8(this.a_)));
+      return new Uint8Array(Mcl.frSerialize(Utils.Uint32ToUint8(this.a_)));
     } catch(e) {
       console.log(e)
       return new Uint8Array(32);
@@ -119,16 +119,16 @@ export class Fr extends Common {
     this._setA(Mcl.frSetStr(s, base));
   }
   getStr(base = 0) {
-    return Mcl.frGetStr(utils.Uint32ToUint8(this.a_), base);
+    return Mcl.frGetStr(Utils.Uint32ToUint8(this.a_), base);
   }
   isZero() {
-    return Mcl.frIsZero(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.frIsZero(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isOne() {
-    return Mcl.frIsOne(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.frIsOne(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isEqual(rhs: this) {
-    return Mcl.frIsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.frIsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   setLittleEndian(s: Uint8Array) {
     this._setA(Mcl.frSetLittleEndian(s));
@@ -167,10 +167,10 @@ export class Fp extends Common {
     this._setA(Mcl.fpSetInt32(x));
   }
   deserialize(s: Uint8Array) {
-    this._setA(Mcl.fpDeserialize(s));
+    this._setA(Mcl.fpDeserialize(new Uint8Array(s)));
   }
   serialize() {
-    return new Uint8Array(Mcl.fpSerialize(utils.Uint32ToUint8(this.a_)));
+    return new Uint8Array(Mcl.fpSerialize(Utils.Uint32ToUint8(this.a_)));
   }
   setStr(s: string, base = 0) {
     this._setA(Mcl.fpSetStr(s, base));
@@ -179,7 +179,7 @@ export class Fp extends Common {
     return Mcl.fpGetStr(this.a_, base);
   }
   isEqual(rhs: this) {
-    return Mcl.fpIsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.fpIsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   setLittleEndian(s: Uint8Array) {
     this._setA(Mcl.fpSetLittleEndian(s));
@@ -204,7 +204,7 @@ export class Fp extends Common {
   }
   mapToG1() {
     const y = new G1();
-    y._setA(Mcl.fpMapToG1(utils.Uint32ToUint8(this.a_)));
+    y._setA(Mcl.fpMapToG1(Utils.Uint32ToUint8(this.a_)));
     return y;
   }
 }
@@ -227,13 +227,13 @@ export class Fp2 extends Common {
     this.set_b(v);
   }
   deserialize(s: Uint8Array) {
-    this._setA(Mcl.fp2Deserialize(s));
+    this._setA(Mcl.fp2Deserialize(new Uint8Array(s)));
   }
   serialize() {
-    return new Uint8Array(Mcl.fp2Serialize(utils.Uint32ToUint8(this.a_)));
+    return new Uint8Array(Mcl.fp2Serialize(Utils.Uint32ToUint8(this.a_)));
   }
   isEqual(rhs: this) {
-    return Mcl.fp2IsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.fp2IsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   /*
     x = a + bi where a, b in Fp and i^2 = -1
@@ -256,7 +256,7 @@ export class Fp2 extends Common {
   }
   mapToG2() {
     const y = new G2();
-    y._setA(Mcl.fpMapToG2(utils.Uint32ToUint8(this.a_)));
+    y._setA(Mcl.fpMapToG2(Utils.Uint32ToUint8(this.a_)));
     return y;
   }
 }
@@ -271,16 +271,16 @@ export class G1 extends Common {
     super(MCLBN_G1_SIZE);
   }
   deserialize(s: Uint8Array) {
-    this._setA(Mcl.g1Deserialize(s))
+    this._setA(Mcl.g1Deserialize(new Uint8Array(s)))
   }
   serialize() {
-    return new Uint8Array(Mcl.g1Serialize(utils.Uint32ToUint8(this.a_)));
+    return new Uint8Array(Mcl.g1Serialize(Utils.Uint32ToUint8(this.a_)));
   }
   setStr(s: string, base = 0) {
     this._setA(Mcl.g1SetStr(s, base));
   }
   getStr(base = 0) {
-    return Mcl.g1GetStr(utils.Uint32ToUint8(this.a_), base);
+    return Mcl.g1GetStr(Utils.Uint32ToUint8(this.a_), base);
   }
   normalize() {
     this.a_ = normalize(this).a_;
@@ -310,16 +310,16 @@ export class G1 extends Common {
     this._setSubArray(v, 2, 3);
   }
   isZero() {
-    return Mcl.g1IsZero(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g1IsZero(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isValid() {
-    return Mcl.g1IsValid(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g1IsValid(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isValidOrder() {
-    return Mcl.g1IsValidOrder(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g1IsValidOrder(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isEqual(rhs: this) {
-    return Mcl.g1IsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.g1IsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   setHashOf(s: Uint8Array) {
     if (typeof s === 'string') {
@@ -363,16 +363,16 @@ export class G2 extends Common {
     super(MCLBN_G2_SIZE);
   }
   deserialize(s: Uint8Array) {
-    this._setA(Mcl.g2Deserialize(s));
+    this._setA(Mcl.g2Deserialize(new Uint8Array(s)));
   }
   serialize() {
-    return new Uint8Array(Mcl.g2Serialize(utils.Uint32ToUint8(this.a_)));
+    return new Uint8Array(Mcl.g2Serialize(Utils.Uint32ToUint8(this.a_)));
   }
   setStr(s: string, base = 0) {
     this._setA(Mcl.g2SetStr(s, base));
   }
   getStr(base = 0) {
-    return Mcl.g2GetStr(utils.Uint32ToUint8(this.a_), base);
+    return Mcl.g2GetStr(Utils.Uint32ToUint8(this.a_), base);
   }
   normalize() {
     this.a_ = normalize(this).a_;
@@ -402,16 +402,16 @@ export class G2 extends Common {
     this._setSubArray(v, 2, 3);
   }
   isZero() {
-    return Mcl.g2IsZero(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g2IsZero(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isValid() {
-    return Mcl.g2IsValid(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g2IsValid(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isValidOrder() {
-    return Mcl.g2IsValidOrder(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g2IsValidOrder(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isEqual(rhs: this) {
-    return Mcl.g2IsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.g2IsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   setHashOf(a: Uint8Array) {
     if (typeof a === 'string') {
@@ -436,25 +436,25 @@ export class GT extends Common {
     this._setA(Mcl.gtSetInt32(x));
   }
   deserialize(s: Uint8Array) {
-    this._setA(Mcl.gtDeserialize(s));
+    this._setA(Mcl.gtDeserialize(new Uint8Array(s)));
   }
   serialize() {
-    return new Uint8Array(Mcl.gtSerialize(utils.Uint32ToUint8(this.a_)));
+    return new Uint8Array(Mcl.gtSerialize(Utils.Uint32ToUint8(this.a_)));
   }
   setStr(s: string, base = 0) {
     this._setA(Mcl.gtSetStr(s, base));
   }
   getStr(base = 0) {
-    return Mcl.gtGetStr(utils.Uint32ToUint8(this.a_), base);
+    return Mcl.gtGetStr(Utils.Uint32ToUint8(this.a_), base);
   }
   isEqual(rhs: this) {
-    return Mcl.g1IsEqual(utils.Uint32ToUint8(this.a_), utils.Uint32ToUint8(rhs.a_)) === 1;
+    return Mcl.g1IsEqual(Utils.Uint32ToUint8(this.a_), Utils.Uint32ToUint8(rhs.a_)) === 1;
   }
   isZero() {
-    return Mcl.g1IsZero(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g1IsZero(Utils.Uint32ToUint8(this.a_)) === 1;
   }
   isOne() {
-    return Mcl.g1IsOne(utils.Uint32ToUint8(this.a_)) === 1;
+    return Mcl.g1IsOne(Utils.Uint32ToUint8(this.a_)) === 1;
   }
 }
 
@@ -471,7 +471,7 @@ export class PrecomputedG2 {
     if (!(Q instanceof G2)) throw new Error('PrecomputedG2:bad type');
     //const byteSize = Mcl.getUint64NumToPrecompute() * 8;
     //this.p = new Uint32Array(byteSize);
-    this.p = utils.Uint8ToUint32(Mcl.precomputeG2(utils.Uint32ToUint8(Q.a_)));
+    this.p = Utils.Uint8ToUint32(Mcl.precomputeG2(Utils.Uint32ToUint8(Q.a_)));
   }
   /*
     call destroy if PrecomputedG2 is not necessary
@@ -485,32 +485,32 @@ export class PrecomputedG2 {
 export const neg = (x: any) => {
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frNeg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.frNeg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpNeg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fpNeg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof G1) {
     let ret = new G1();
-    ret._setA(Mcl.g1Neg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g1Neg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Neg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g2Neg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtNeg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.gtNeg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp2) {
     let ret = new Fp2();
-    ret._setA(Mcl.fp2Neg(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fp2Neg(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   throw new Error('neg:bad type')
@@ -519,22 +519,22 @@ export const neg = (x: any) => {
 export const sqr = (x: any) => {
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frSqr(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.frSqr(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpSqr(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fpSqr(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtSqr(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.gtSqr(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp2) {
     let ret = new Fp2();
-    ret._setA(Mcl.fp2Sqr(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fp2Sqr(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   throw new Error('sqr:bad type')
@@ -543,22 +543,22 @@ export const sqr = (x: any) => {
 export const inv = (x: any) => {
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frInv(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.frInv(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpInv(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fpInv(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtInv(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.gtInv(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof Fp2) {
     let ret = new Fp2();
-    ret._setA(Mcl.fp2Inv(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.fp2Inv(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   throw new Error('inv:bad type')
@@ -567,12 +567,12 @@ export const inv = (x: any) => {
 export const normalize = (x: any) => {
   if (x instanceof G1) {
     let ret = new G1();
-    ret._setA(Mcl.g1Normalize(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g1Normalize(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Normalize(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g2Normalize(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   throw new Error('normalize:bad type')
@@ -582,27 +582,27 @@ export const add = (x: any, y: any) => {
   if (x.constructor !== y.constructor) throw new Error('add:mismatch type')
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpAdd(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.fpAdd(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frAdd(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.frAdd(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G1) {
     let ret = new G1();
-    ret._setA(Mcl.g1Add(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g1Add(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Add(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g2Add(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtAdd(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.gtAdd(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('add:bad type')
@@ -612,32 +612,32 @@ export const sub = (x: any, y: any) => {
   if (x.constructor !== y.constructor) throw new Error('sub:mismatch type')
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpSub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.fpSub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frSub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.frSub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G1) {
     let ret = new G1();
-    ret._setA(Mcl.g1Sub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g1Sub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Sub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g2Sub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtSub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.gtSub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Sub(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g2Sub(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('sub:bad type')
@@ -646,32 +646,32 @@ export const sub = (x: any, y: any) => {
 export const mul = (x: any, y:any) => {
   if (x instanceof Fp && y instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpMul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.fpMul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof Fr && y instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frMul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.frMul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G1 && y instanceof Fr) {
     let ret = new G1();
-    ret._setA(Mcl.g1Mul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g1Mul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G2 && y instanceof Fr) {
     let ret = new G2();
-    ret._setA(Mcl.g2Mul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g2Mul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof GT && y instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtMul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.gtMul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof Fp2 && y instanceof Fp2) {
     let ret = new Fp2();
-    ret._setA(Mcl.fp2Mul(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.fp2Mul(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('mul:mismatch type')
@@ -681,12 +681,12 @@ export const mulVec = (xVec: any, yVec: Fr[]) => {
   if (xVec.length == 0) throw new Error('mulVec:zero array')
   if (xVec[0] instanceof G1 && yVec[0] instanceof Fr) {
     let ret = new G1();
-    ret._setA(Mcl.g1MulVec(xVec.map((a: G1) => utils.Uint32ToUint8(a.a_)), yVec.map((a: Fr) => utils.Uint32ToUint8(a.a_))));
+    ret._setA(Mcl.g1MulVec(xVec.map((a: G1) => Utils.Uint32ToUint8(a.a_)), yVec.map((a: Fr) => Utils.Uint32ToUint8(a.a_))));
     return ret;
   }
   if (xVec[0] instanceof G2 && yVec[0] instanceof Fr) {
     let ret = new G2();
-    ret._setA(Mcl.g2Mul(xVec.map((a: G2) => utils.Uint32ToUint8(a.a_)), yVec.map((a: Fr) => utils.Uint32ToUint8(a.a_))));
+    ret._setA(Mcl.g2MulVec(xVec.map((a: G2) => Utils.Uint32ToUint8(a.a_)), yVec.map((a: Fr) => Utils.Uint32ToUint8(a.a_))));
     return ret;
   }
   throw new Error('mulVec:mismatch type')
@@ -696,22 +696,22 @@ export const div = (x: any, y:any) => {
   if (x.constructor !== y.constructor) throw new Error('div:mismatch type')
   if (x instanceof Fp) {
     let ret = new Fp();
-    ret._setA(Mcl.fpDiv(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.fpDiv(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof Fr) {
     let ret = new Fr();
-    ret._setA(Mcl.frDiv(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.frDiv(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof GT) {
     let ret = new GT();
-    ret._setA(Mcl.gtDiv(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.gtDiv(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Div(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret._setA(Mcl.g2Div(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('div:bad type')
@@ -720,12 +720,12 @@ export const div = (x: any, y:any) => {
 export const dbl = (x: any) => {
   if (x instanceof G1) {
     let ret = new G1();
-    ret._setA(Mcl.g1Dbl(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g1Dbl(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   if (x instanceof G2) {
     let ret = new G2();
-    ret._setA(Mcl.g2Dbl(utils.Uint32ToUint8(x.a_)));
+    ret._setA(Mcl.g2Dbl(Utils.Uint32ToUint8(x.a_)));
     return ret;
   }
   throw new Error('inv:bad type')
@@ -749,7 +749,7 @@ export const hashAndMapToG2 = (s: Uint8Array) => {
 export const pow = (x: GT, y: Fr) => {
   if (x instanceof GT && y instanceof Fr) {
     let ret = new GT();
-    ret.a_ = utils.Uint8ToUint32(Mcl.gtPow(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret.a_ = Utils.Uint8ToUint32(Mcl.gtPow(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('pow:bad type')
@@ -757,11 +757,41 @@ export const pow = (x: GT, y: Fr) => {
 export const pairing = (x: G1, y: G2) => {
   if (x instanceof G1 && y instanceof G2) {
     let ret = new GT();
-    ret.a_ = utils.Uint8ToUint32(Mcl.pairing(utils.Uint32ToUint8(x.a_), utils.Uint32ToUint8(y.a_)));
+    ret.a_ = Utils.Uint8ToUint32(Mcl.pairing(Utils.Uint32ToUint8(x.a_), Utils.Uint32ToUint8(y.a_)));
     return ret;
   }
   throw new Error('pow:bad type')
 }
 export async function init(curve = CurveType.BLS12_381) {
-  await Mcl.initialize(curve);
+  try {
+    await Mcl.initialize(curve);
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+export const getPublicKey = (sk: Uint8Array) => {
+  return new Uint8Array(Mcl.getPublicKey(sk));
+}
+
+export const sign = (m: Uint8Array, pk: Uint8Array) => {
+  return new Uint8Array(Mcl.sign(m, pk));
+}
+
+export const verify = (sig: Uint8Array, m: Uint8Array, pk: Uint8Array) => {
+  return Mcl.verify(sig, m, pk);
+}
+
+export const aggregateSignatures = (sigs: Uint8Array[]) => {
+  return new Uint8Array(Mcl.aggregateSignatures(sigs));
+}
+
+export const verifyBatch = (sig: Uint8Array, ms: Uint8Array[], pks: Uint8Array[]) => {
+  return Mcl.verifyBatch(sig, ms, pks);
+}
+
+export const utils = {
+  setDSTLabel: (a: string) => {
+    Mcl.setDSTLabel(a);
+  }
 }

@@ -1,11 +1,132 @@
 #include <jni.h>
 #include <mcl/bn_c384_256.h>
+#include <bls/bls.h>
 #include<android/log.h>
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "ReactNative", __VA_ARGS__)
 
 extern "C"
 {
+
+// PublicKey
+
+blsPublicKey jintArrayToPk(JNIEnv* env, jintArray *a)
+{
+  jsize len = env->GetArrayLength(*a);
+
+  jint *b = env->GetIntArrayElements (*a, 0);
+
+  unsigned char bb[len];
+
+  for (int i = 0; i < len; i++){
+    bb[i] = b[i];
+  }
+
+  blsPublicKey pk;
+  blsPublicKeyDeserialize(&pk, bb, len);
+
+  env->ReleaseIntArrayElements (*a, b, JNI_ABORT);
+
+  return pk;
+}
+
+jintArray pkToJintArray(JNIEnv* env, const blsPublicKey& pk)
+{
+  unsigned char ba[3096];
+  int baLen = blsPublicKeySerialize(&ba[0], 3096, &pk);
+
+  jint bab[baLen];
+
+  for (int i = 0; i < baLen; i++){
+    bab[i] = ba[i];
+  }
+
+  jintArray ret = env->NewIntArray(baLen);
+
+  env->SetIntArrayRegion(ret, 0, baLen, &bab[0]);
+
+  return ret;
+}
+
+// SecretKey
+
+blsSecretKey jintArrayToSk(JNIEnv* env, jintArray *a)
+{
+  jsize len = env->GetArrayLength(*a);
+
+  jint *b = env->GetIntArrayElements (*a, 0);
+
+  unsigned char bb[len];
+
+  for (int i = 0; i < len; i++){
+    bb[i] = b[i];
+  }
+
+  blsSecretKey sk;
+  blsSecretKeyDeserialize(&sk, bb, len);
+
+  env->ReleaseIntArrayElements (*a, b, JNI_ABORT);
+
+  return sk;
+}
+
+jintArray skToJintArray(JNIEnv* env, const blsSecretKey& sk)
+{
+  unsigned char ba[3096];
+  int baLen = blsSecretKeySerialize(&ba[0], 3096, &sk);
+
+  jint bab[baLen];
+
+  for (int i = 0; i < baLen; i++){
+    bab[i] = ba[i];
+  }
+
+  jintArray ret = env->NewIntArray(baLen);
+
+  env->SetIntArrayRegion(ret, 0, baLen, &bab[0]);
+
+  return ret;
+}
+
+// Signature
+
+blsSignature jintArrayToSig(JNIEnv* env, jintArray *a)
+{
+  jsize len = env->GetArrayLength(*a);
+
+  jint *b = env->GetIntArrayElements (*a, 0);
+
+  unsigned char bb[len];
+
+  for (int i = 0; i < len; i++){
+    bb[i] = b[i];
+  }
+
+  blsSignature sig;
+  blsSignatureDeserialize(&sig, bb, len);
+
+  env->ReleaseIntArrayElements (*a, b, JNI_ABORT);
+
+  return sig;
+}
+
+jintArray sigToJintArray(JNIEnv* env, const blsSignature& sig)
+{
+  unsigned char ba[3096];
+  int baLen = blsSignatureSerialize(&ba[0], 3096, &sig);
+
+  jint bab[baLen];
+
+  for (int i = 0; i < baLen; i++){
+    bab[i] = ba[i];
+  }
+
+  jintArray ret = env->NewIntArray(baLen);
+
+  env->SetIntArrayRegion(ret, 0, baLen, &bab[0]);
+
+  return ret;
+}
 
 // Fr
 
@@ -1734,6 +1855,112 @@ Java_com_reactnativemcl_MclModule__1finalExp(JNIEnv *env, jclass type, jintArray
 
 JNIEXPORT bool JNICALL
 Java_com_reactnativemcl_MclModule__1initialize(JNIEnv *env, jclass type, int curve = 5) {
-    return mclBn_init(curve, MCLBN_COMPILED_TIME_VAR) == 0;
+  return blsInit(curve, MCLBN_COMPILED_TIME_VAR) == 0;
 }
+
+// noble
+
+JNIEXPORT void JNICALL
+Java_com_reactnativemcl_MclModule__1setDSTLabel(JNIEnv *env, jclass type, jstring a) {
+    const char *c_str;
+
+    c_str = env->GetStringUTFChars (a, NULL);
+
+    mclBnG1_setDst(c_str, strlen(c_str));
+    mclBnG2_setDst(c_str, strlen(c_str));
+}
+
+JNIEXPORT jintArray JNICALL
+Java_com_reactnativemcl_MclModule__1getPublicKey(JNIEnv *env, jclass type, jintArray a) {
+  blsSecretKey sk = jintArrayToSk(env, &a);
+
+  blsPublicKey result;
+  blsGetPublicKey(&result, &sk);
+
+  jintArray ret = pkToJintArray(env, result);
+
+  return ret;
+}
+
+JNIEXPORT jintArray JNICALL
+Java_com_reactnativemcl_MclModule__1sign(JNIEnv *env, jclass type, jintArray a, jintArray b) {
+  jsize len = env->GetArrayLength(a);
+  unsigned char * msg = jintArrayToIntArray(env, &a, len);
+  blsSecretKey sk = jintArrayToSk(env, &b);
+
+  blsSignature result;
+  blsSign(&result, &sk, msg, len);
+
+  jintArray ret = sigToJintArray(env, result);
+
+  return ret;
+}
+
+JNIEXPORT bool JNICALL
+Java_com_reactnativemcl_MclModule__1verify(JNIEnv *env, jclass type, jintArray a, jintArray b, jintArray c) {
+  blsSignature sig = jintArrayToSig(env, &a);
+  jsize len = env->GetArrayLength(b);
+  unsigned char * msg = jintArrayToIntArray(env, &b, len);
+  blsPublicKey pk = jintArrayToPk(env, &c);
+
+  return blsVerify(&sig, &pk, msg, len) == 1;
+}
+
+JNIEXPORT jintArray JNICALL
+Java_com_reactnativemcl_MclModule__1aggregateSignatures(JNIEnv *env, jclass type, jobjectArray a) {
+  jsize len = env->GetArrayLength(a);
+
+  blsSignature sigVec[len];
+
+  for(int i = 0; i < len; i++) {
+    jintArray sigBa = (jintArray) env->GetObjectArrayElement(a, i);
+    blsSignature sig = jintArrayToSig(env, &sigBa);
+    sigVec[i] = sig;
+
+    env->DeleteLocalRef(sigBa);
+  }
+
+  blsSignature result;
+  blsAggregateSignature(&result, &sigVec[0], len);
+
+  jintArray ret = sigToJintArray(env, result);
+
+  return ret;
+}
+
+JNIEXPORT bool JNICALL
+Java_com_reactnativemcl_MclModule__1verifyBatch(JNIEnv *env, jclass type, jintArray a, jobjectArray b, jobjectArray c) {
+  blsSignature sig = jintArrayToSig(env, &a);
+
+  jsize len = env->GetArrayLength(b);
+
+  blsPublicKey pkVec[len];
+
+  jsize msgLen = 0;
+
+  for(int i = 0; i < len; i++) {
+    jintArray pkBa = (jintArray) env->GetObjectArrayElement(c, i);
+    blsPublicKey pk = jintArrayToPk(env, &pkBa);
+    pkVec[i] = pk;
+
+    if (i == 0) {
+      jintArray msgBa = (jintArray) env->GetObjectArrayElement(b, i);
+      msgLen = env->GetArrayLength(msgBa);
+      env->DeleteLocalRef(msgBa);
+    }
+
+    env->DeleteLocalRef(pkBa);
+  }
+
+  unsigned char msgVec[len*msgLen];
+
+  for(int i = 0; i < len; i++) {
+    jintArray pkBa = (jintArray) env->GetObjectArrayElement(b, i);
+    unsigned char * msg = jintArrayToIntArray(env, &pkBa, msgLen);
+    memcpy(msgVec+i*msgLen, msg, msgLen);
+  }
+
+  return blsAggregateVerifyNoCheck(&sig, &pkVec[0], &msgVec[0], msgLen, len) == 1;
+}
+
 }

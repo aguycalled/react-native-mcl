@@ -10,7 +10,7 @@ export default function App() {
     mcl.init().then(() => {
       let t = new mcl.Fr();
 
-      t.deserialize(new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+      t.setBigEndianMod(new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
 
       setResult(t.serialize().toString())
 
@@ -108,8 +108,10 @@ export default function App() {
         }
         a.setLittleEndian(b)
         const c = a.serialize()
+        console.log(c)
         // b[b.length - 1] may be masked
         for (let i = 0; i < b.length - 1; i++) {
+          //console.log(b[i], c[i])
           assert(b[i] === c[i])
         }
         {
@@ -220,6 +222,42 @@ export default function App() {
         assert(R4.isValid())
         assert(R1.isEqual(R4))
         serializeSubTest(mcl.G2, R4, mcl.deserializeHexStrToG2)
+      }
+
+      console.log("noble bls sig")
+
+      const testsVector = [
+        {
+          scheme: 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_',
+          sk: new Uint8Array(Buffer.from('67d53f170b908cabb9eb326c3c337762d59289a8fec79f7bc9254b584b73265c', 'hex')),
+          pk: 'a7e75af9dd4d868a41ad2f5a5b021d653e31084261724fb40ae2f1b1c31c778d3b9464502d599cf6720723ec5c68b59d',
+          m: new Uint8Array(Buffer.from('64726e3da8', 'hex')),
+          signature: 'b22317bfdb10ba592724c27d0cdc51378e5cd94a12cd7e85c895d2a68e8589e8d3c5b3c80f4fe905ef67aa7827617d04110c5c5248f2bb36df97a58c541961ed0f2fcd0760e9de5ae1598f27638dd3ddaebeea08bf313832a57cfdb7f2baaa03',
+          signatureMulti: 'ac58296811c36e1e1c5d730ecd55b6ae1b4ab0d43043cb2e72d0572e0a3e93151078ac83b27649536a23537bb132cc1c16adf373f5e17ce5b34874c1a7c9e44bdf6603fca4180ef63061cc7375933dc9f6b415ee48d39b665cd267b5c71e7d11'
+        },
+        {
+          scheme: 'BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_AUG_',
+          sk: new Uint8Array(Buffer.from('67d53f170b908cabb9eb326c3c337762d59289a8fec79f7bc9254b584b73265c', 'hex')),
+          pk: 'a7e75af9dd4d868a41ad2f5a5b021d653e31084261724fb40ae2f1b1c31c778d3b9464502d599cf6720723ec5c68b59d',
+          m: new Uint8Array(Buffer.from('64726e3da8', 'hex')),
+          signature: 'b7539c54a79ecb9de66e4d187755204240f399776794ed332ce02709a81b992e89bfef3f41480f04cdb4a84674cc741d03649766d2ae11aaeeef759eef77d7a03887502bb3138e8e030ca8b2f1858baf51259f2a5d65a1ddc65bf01abe615fd6',
+          signatureMulti: '94ea83e922d021a152d7fe276ac617fc8c595424d0b6d89b604ee444c374d113b3b949b0b2de2369de686047685aa7890dd81e2bdddd5e87ba4efaec1ab2212939803c1d03713479c0e458518b9be5a28b1d1024a072ff365c15c816a29b6236'
+        },
+      ];
+
+      for (let t of testsVector) {
+        mcl.utils.setDSTLabel(t.scheme);
+        const signature = mcl.sign(t.m, t.sk);
+        const pk = mcl.getPublicKey(t.sk);
+        const isValid = mcl.verify(signature, t.m, pk);
+
+        assert_equal(t.pk, Buffer.from(pk).toString('hex'))
+        assert(isValid);
+        assert_equal(Buffer.from(signature).toString('hex'), t.signature);
+
+        const signatureMulti = mcl.aggregateSignatures([signature, signature, signature, signature]);
+        assert_equal(Buffer.from(signatureMulti).toString('hex'), t.signatureMulti);
+        assert(mcl.verifyBatch(signatureMulti, [t.m, t.m, t.m, t.m], [pk, pk, pk, pk]));
       }
     })
   }, []);

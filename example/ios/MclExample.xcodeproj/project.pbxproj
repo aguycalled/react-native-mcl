@@ -71,7 +71,7 @@
 		E00ACF0FDA8BF921659E2F9A /* Pods-MclExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MclExample.release.xcconfig"; path = "Target Support Files/Pods-MclExample/Pods-MclExample.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		FAF92A8F27D67D0700851293 /* bls_framework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = bls_framework.xcframework; path = "../../../bls-eth-swift/bls_framework.xcframework"; sourceTree = "<group>"; };
+		FAF92A8F27D67D0700851293 /* bls_framework.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = bls_framework.xcframework; path = ../../ios/bls_framework.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

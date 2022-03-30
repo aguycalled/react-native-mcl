@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(initialize:(nonnull NSNumber*)curve)
 {
-    mclBn_init(curve.intValue, MCLBN_COMPILED_TIME_VAR);
+    blsInit(curve.intValue, MCLBN_COMPILED_TIME_VAR);
     return [NSNull null];
 }
 
@@ -1248,6 +1248,116 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(verifyOrderG2:(nonnull NSNumber*)a )
     mclBn_verifyOrderG2(a.intValue);
             
     return [NSNull null];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(setDSTLabel:(nonnull NSString*)a)
+{
+    mclBnG1_setDst([a UTF8String], [a length]);
+    mclBnG2_setDst([a UTF8String], [a length]);
+    
+    return [NSNull null];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getPublicKey:(nonnull NSDictionary*)a )
+{
+    blsPublicKey pub;
+    ARRAY_TO_SK(a, sk)
+    
+    blsGetPublicKey(&pub, &sk);
+        
+    PK_TO_ARRAY(pub, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(sign:(nonnull NSDictionary*)a withB:(nonnull NSDictionary*)b )
+{
+    ARRAY_TO_BYTES(a, m)
+    ARRAY_TO_SK(b, sk)
+    
+    blsSignature sig;
+    blsSign(&sig, &sk, m, [[a allValues] count]);
+    
+    free(m);
+        
+    SIG_TO_ARRAY(sig, ret)
+    
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(verify:(nonnull NSDictionary*)a withB:(nonnull NSDictionary*)b withC:(nonnull NSDictionary*)c)
+{
+    ARRAY_TO_SIG(a, sig)
+    ARRAY_TO_BYTES(b, m)
+    ARRAY_TO_PK(c, pk)
+    
+    int ret = blsVerify(&sig, &pk, m, [[b allValues] count]);
+    
+    free(m);
+        
+    return [NSNumber numberWithInt:ret];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(aggregateSignatures:(nonnull NSArray*)a )
+{
+    size_t count = a.count;
+    
+    blsSignature sigVec[count];
+    
+    NSUInteger idx = 0;
+    for (id item in a)
+    {
+        ARRAY_TO_SIG(item, op)
+        sigVec[idx] = op;
+        idx++;
+    }
+
+    blsSignature result;
+    blsAggregateSignature(&result, &sigVec[0], count);
+        
+    SIG_TO_ARRAY(result, ret)
+            
+    return ret;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(verifyBatch:(nonnull NSDictionary*)a withB:(nonnull NSArray*)b withC:(nonnull NSArray*)c)
+{
+    ARRAY_TO_SIG(a, sig)
+    
+    size_t len = [b count];
+    size_t msgLen = 0;
+    
+    blsPublicKey pkVec[len];
+    
+    NSUInteger idx = 0;
+    for (id item in c)
+    {
+        ARRAY_TO_PK(item, op)
+        pkVec[idx] = op;
+        
+        idx++;
+    }
+    
+    for (id item in b)
+    {
+        msgLen = [[item allValues] count];
+        break;
+    }
+    
+    unsigned char msgVec[len*msgLen];
+
+    idx = 0;
+    for (id item in b)
+    {
+        ARRAY_TO_BYTES(item, msg);
+        memcpy(msgVec+idx*msgLen, msg, msgLen);
+        idx++;
+        free(msg);
+    }
+        
+    int ret = blsAggregateVerifyNoCheck(&sig, &pkVec[0], &msgVec[0], msgLen, len);
+        
+    return [NSNumber numberWithInt:ret];
 }
 
 @end

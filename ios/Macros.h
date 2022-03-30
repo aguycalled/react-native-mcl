@@ -8,6 +8,39 @@
 #ifndef Macros_h
 #define Macros_h
 
+#define ARRAY_TO_PK(ba, pk) \
+Byte* pk##Bytes = calloc([[ba allValues] count], sizeof(Byte)); \
+[ba enumerateKeysAndObjectsUsingBlock:^(id index, id number, BOOL* stop){ \
+if(![number isEqual:[NSNull null]]) { \
+pk##Bytes[[index integerValue]] = [number intValue]; \
+} \
+}]; \
+blsPublicKey pk; \
+size_t pk##DeserSize = blsPublicKeyDeserialize(&pk, &pk##Bytes[0], [[ba allValues] count]); \
+free(pk##Bytes);
+
+#define ARRAY_TO_SK(ba, sk) \
+Byte* sk##Bytes = calloc([[ba allValues] count], sizeof(Byte)); \
+[ba enumerateKeysAndObjectsUsingBlock:^(id index, id number, BOOL* stop){ \
+if(![number isEqual:[NSNull null]]) { \
+sk##Bytes[[index integerValue]] = [number intValue]; \
+} \
+}]; \
+blsSecretKey sk; \
+size_t sk##DeserSize = blsSecretKeyDeserialize(&sk, &sk##Bytes[0], [[ba allValues] count]); \
+free(sk##Bytes);
+
+#define ARRAY_TO_SIG(ba, sig) \
+Byte* sig##Bytes = calloc([[ba allValues] count], sizeof(Byte)); \
+[ba enumerateKeysAndObjectsUsingBlock:^(id index, id number, BOOL* stop){ \
+if(![number isEqual:[NSNull null]]) { \
+sig##Bytes[[index integerValue]] = [number intValue]; \
+} \
+}]; \
+blsSignature sig; \
+size_t sig##DeserSize = blsSignatureDeserialize(&sig, &sig##Bytes[0], [[ba allValues] count]); \
+free(sig##Bytes);
+
 #define ARRAY_TO_G1(ba, g1) \
 Byte* g1##Bytes = calloc([[ba allValues] count], sizeof(Byte)); \
 [ba enumerateKeysAndObjectsUsingBlock:^(id index, id number, BOOL* stop){ \
@@ -269,6 +302,33 @@ NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: sizeof(ca)]; \
 for (unsigned int i = 0; i < sizeof(ca); i++) \
 { \
 [ba addObject: [NSNumber numberWithUnsignedChar:ca[i]]]; \
+}
+
+#define PK_TO_ARRAY(pk, ba) \
+Byte ba##C[3096]; \
+int ba##len = blsPublicKeySerialize(&ba##C[0], 3096, &pk); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
+{ \
+[ba addObject: [NSNumber numberWithUnsignedChar:ba##C[i]]]; \
+}
+
+#define SK_TO_ARRAY(pk, ba) \
+Byte ba##C[3096]; \
+int ba##len = blsSecretKeySerialize(&ba##C[0], 3096, &pk); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
+{ \
+[ba addObject: [NSNumber numberWithUnsignedChar:ba##C[i]]]; \
+}
+
+#define SIG_TO_ARRAY(pk, ba) \
+Byte ba##C[3096]; \
+int ba##len = blsSignatureSerialize(&ba##C[0], 3096, &pk); \
+NSMutableArray *ba = [[NSMutableArray alloc] initWithCapacity: ba##len]; \
+for (unsigned int i = 0; i < ba##len; i++) \
+{ \
+[ba addObject: [NSNumber numberWithUnsignedChar:ba##C[i]]]; \
 }
 
 #endif /* Macros_h */
