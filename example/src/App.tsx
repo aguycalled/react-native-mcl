@@ -7,7 +7,7 @@ export default function App() {
   const [result, setResult] = React.useState('');
 
   React.useEffect(() => {
-    mcl.init().then(() => {
+    mcl.init().then(async () => {
       let t = new mcl.Fr();
 
       t.setBigEndianMod(new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
@@ -247,9 +247,9 @@ export default function App() {
 
       for (let t of testsVector) {
         mcl.utils.setDSTLabel(t.scheme);
-        const signature = mcl.sign(t.m, t.sk);
+        const signature = await mcl.sign(t.m, t.sk);
         const pk = mcl.getPublicKey(t.sk);
-        const isValid = mcl.verify(signature, t.m, pk);
+        const isValid = await mcl.verify(signature, t.m, pk);
 
         assert_equal(t.pk, Buffer.from(pk).toString('hex'))
         assert(isValid);
@@ -257,7 +257,7 @@ export default function App() {
 
         const signatureMulti = mcl.aggregateSignatures([signature, signature, signature, signature]);
         assert_equal(Buffer.from(signatureMulti).toString('hex'), t.signatureMulti);
-        assert(mcl.verifyBatch(signatureMulti, [t.m, t.m, t.m, t.m], [pk, pk, pk, pk]));
+        assert(await mcl.verifyBatch(signatureMulti, [t.m, t.m, t.m, t.m], [pk, pk, pk, pk]));
       }
     })
   }, []);

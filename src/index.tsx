@@ -774,20 +774,21 @@ export const getPublicKey = (sk: Uint8Array) => {
   return new Uint8Array(Mcl.getPublicKey(sk));
 }
 
-export const sign = (m: Uint8Array, pk: Uint8Array) => {
-  return new Uint8Array(Mcl.sign(m, pk));
+export const sign = async (m: Uint8Array, pk: Uint8Array) => {
+  let ret = new Uint8Array(Mcl.sign(new Uint8Array(m), new Uint8Array(pk)));
+  return ret;
 }
 
-export const verify = (sig: Uint8Array, m: Uint8Array, pk: Uint8Array) => {
-  return Mcl.verify(sig, m, pk);
+export const verify = async (sig: Uint8Array, m: Uint8Array, pk: Uint8Array) => {
+  return Mcl.verify(new Uint8Array(sig), new Uint8Array(m), new Uint8Array(pk));
 }
 
 export const aggregateSignatures = (sigs: Uint8Array[]) => {
-  return new Uint8Array(Mcl.aggregateSignatures(sigs));
+  return new Uint8Array(Mcl.aggregateSignatures(sigs.map(el => new Uint8Array(el))));
 }
 
-export const verifyBatch = (sig: Uint8Array, ms: Uint8Array[], pks: Uint8Array[]) => {
-  return Mcl.verifyBatch(sig, ms, pks);
+export const verifyBatch = async (sig: Uint8Array, ms: Uint8Array[], pks: Uint8Array[]) => {
+  return Mcl.verifyBatch(new Uint8Array(sig), ms.map(el => new Uint8Array(el)), pks.map(el => new Uint8Array(el)));
 }
 
 export const utils = {
