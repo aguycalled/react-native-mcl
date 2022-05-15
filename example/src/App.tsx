@@ -8,6 +8,7 @@ export default function App() {
 
   React.useEffect(() => {
     mcl.init().then(async () => {
+      mcl.setETHserialization(true);
       let t = new mcl.Fr();
 
       t.setBigEndianMod(new Uint8Array([2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
@@ -259,6 +260,24 @@ export default function App() {
         assert_equal(Buffer.from(signatureMulti).toString('hex'), t.signatureMulti);
         assert(await mcl.verifyBatch(signatureMulti, [t.m, t.m, t.m, t.m], [pk, pk, pk, pk]));
       }
+
+      /*let fp = new mcl.Fp();
+
+      fp.setLittleEndianMod(new Uint8Array([1,2,3]))
+      console.log(fp)
+      for (let i = 0 ; i < 43; i++) {
+        console.log(i, mcl.setMapToMode(i))
+        console.log(fp.mapToG1())
+        console.log(fp.mapToG1().serializeToHexStr())
+      }*/
+
+      let vk = new mcl.Fr();
+      vk.deserializeHexStr("348307de34f0c7522dc352f43ac89013b298aa0bcbd3d81939622c3c18c8a975");
+
+      let hash = mcl.getHashId("ab5b8b79f53ebb03ee34b2bf3936dd0114f2c200c5f073740cb7e9cd062baae9090f66f6ab5ffb96c5aae214199e4533",
+        "82abe5aeeca60f0a8f9cac973cedb2edd17a4b9f1d012e28ef0e75cec16f1811560d1a593ed3ab71f3b839ded871c73d",
+        vk);
+      assert_equal(hash.serializeToHexStr(), "96123e8bfea4fc99734840e964cee4a9b5856578c6e819a3705d1dd875e4356ece8e3cb11c4d6457aefba925b50e365e");
     })
   }, []);
 

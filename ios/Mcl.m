@@ -1,6 +1,7 @@
 #import "Mcl.h"
 #import "Macros.h"
 #include <bls_framework/bls_framework.h>
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation Mcl
 
@@ -1358,6 +1359,57 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(verifyBatch:(nonnull NSDictionary*)a with
     int ret = blsAggregateVerifyNoCheck(&sig, &pkVec[0], &msgVec[0], msgLen, len);
         
     return [NSNumber numberWithInt:ret];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(GetHashId:(nonnull NSDictionary*)a withB:(nonnull NSDictionary*)b withC:(nonnull NSDictionary*)c)
+{
+    DESER_ARRAY_TO_G1(a, ok)
+    DESER_ARRAY_TO_G1(b, sk)
+    DESER_ARRAY_TO_FR(c, vk)
+    
+    mclBnG1 t;
+    mclBnG1_mul(&t, &ok, &vk);
+    
+    
+    Byte* toHash = calloc(57, sizeof(Byte));
+    toHash[0] = 48;
+    int tSerLen = mclBnG1_serialize(&toHash[1], 48, &t);
+    toHash[49] = 0;
+    toHash[50] = 0;
+    toHash[51] = 0;
+    toHash[52] = 0;
+    toHash[53] = 0;
+    toHash[54] = 0;
+    toHash[55] = 0;
+    toHash[56] = 0;
+
+    unsigned char hashed[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256(&toHash[0], 57, &hashed[0]);
+    CC_SHA256(&hashed[0], CC_SHA256_DIGEST_LENGTH, &hashed[0]);
+
+    mclBnFr hash_t;
+    mclBnFr_setBigEndianMod(&hash_t, &hashed[0], 32);
+    
+    mclBnG1 gen;
+    blsGetGeneratorOfPublicKey((blsPublicKey *)&gen);
+
+    mclBnG1 hash_t_g1;
+    mclBnG1_mul(&hash_t_g1, &gen, &hash_t);
+
+    mclBnFr one;
+    mclBnFr oneNeg;
+    mclBnFr_setInt32(&one, 1);
+    mclBnFr_neg(&oneNeg, &one);
+
+    mclBnG1 hash_t_g1Neg;
+    mclBnG1_mul(&hash_t_g1Neg, &hash_t_g1, &oneNeg);
+
+    mclBnG1 res;
+    mclBnG1_add(&res, &hash_t_g1Neg, &sk);
+        
+    G1_TO_ARRAY(res, ret)
+            
+    return ret;
 }
 
 @end

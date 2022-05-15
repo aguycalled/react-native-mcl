@@ -791,6 +791,16 @@ export const verifyBatch = async (sig: Uint8Array, ms: Uint8Array[], pks: Uint8A
   return Mcl.verifyBatch(new Uint8Array(sig), ms.map(el => new Uint8Array(el)), pks.map(el => new Uint8Array(el)));
 }
 
+export const getHashId = (ok: string | G1, sk: string | G1, vk: Fr) => {
+  let ret = new G1();
+  if (ok instanceof G1 && sk instanceof G1) {
+    ret.a_ = Utils.Uint8ToUint32(Mcl.GetHashId(Utils.Uint32ToUint8(ok.a_), Utils.Uint32ToUint8(sk.a_), vk.serialize()));
+  } else {
+    ret.a_ = Utils.Uint8ToUint32(Mcl.GetHashId(Utils.fromHexStr(ok as string), Utils.fromHexStr(sk as string), vk.serialize()));
+  }
+  return ret;
+}
+
 export const utils = {
   setDSTLabel: (a: string) => {
     Mcl.setDSTLabel(a);

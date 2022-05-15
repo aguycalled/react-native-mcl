@@ -9,6 +9,7 @@ add_library(cpp
             ../cpp/mcl/src/fp.cpp
             ../cpp/bls/src/bls_c384_256.cpp
             cpp_adapter.cpp
+            hashes.h
 )
 
 # Specifies a path to native header files.

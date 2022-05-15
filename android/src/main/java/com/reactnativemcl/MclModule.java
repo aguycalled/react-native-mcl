@@ -1695,6 +1695,25 @@ public class MclModule extends ReactContextBaseJavaModule {
         return _verifyBatch(byteArray, byteArray2, byteArray3);
     }
 
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableArray GetHashId(ReadableMap a, ReadableMap b, ReadableMap c) {
+        try {
+            int[] byteArray = readableMapToIntArray(a);
+            int[] byteArray2 = readableMapToIntArray(b);
+            int[] byteArray3 = readableMapToIntArray(c);
+
+            int[] result = _getHashId(byteArray, byteArray2, byteArray3);
+
+            if (result != null) {
+                WritableArray array = Arguments.makeNativeArray(result);
+                return array;
+            }
+        } catch (Exception e) {
+            Log.d("ReactNative", e.toString());
+        }
+        return null;
+    }
+
     @ReactMethod
     public void initialize(int a, Promise promise) {
         if (_initialize(a)) {
@@ -1828,4 +1847,6 @@ public class MclModule extends ReactContextBaseJavaModule {
     public static native boolean _verify(int[] a, int[] b, int[] c);
     public static native int[] _aggregateSignatures(int[][] a);
     public static native boolean _verifyBatch(int[] a, int[][] b, int[][] c);
+
+    public static native int[] _getHashId(int[] a, int[] b, int[] c);
 }
